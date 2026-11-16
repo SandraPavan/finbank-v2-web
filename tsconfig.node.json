@@ -1,5 +1,5 @@
 {
-  "include": ["vite.config.ts"],
+  "include": ["vite.config.ts", "cypress.config.ts", "eslint.config.js"],
   "compilerOptions": {
     "target": "ES2023",
     "lib": ["ES2023"],
@@ -8,6 +8,7 @@
     "allowImportingTsExtensions": true,
     "moduleDetection": "force",
     "strict": true,
+    "allowJs": true,
     "skipLibCheck": true,
     "types": ["node"],
     "noEmit": true,

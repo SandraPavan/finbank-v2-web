@@ -10,3 +10,8 @@ coverage/
 *.key
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Artefatos do Cypress
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
