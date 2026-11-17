@@ -2,6 +2,8 @@
 
 @../CLAUDE.md
 
+Este repositório é público. Os caminhos `../` abaixo (import, rules e histórias) só existem no workspace interno da equipe; num clone isolado, siga o README.md.
+
 Este diretório possui Git independente. Documentação oficial, regras e skills estão na coordenação, um nível acima. Não criar cópias locais do PRD ou backlog.
 
 Antes de trabalhar, ler `../.claude/rules/` e a história solicitada em `../_bmad-output/implementation-artifacts/stories/`. Para descoberta consistente das skills compartilhadas, iniciar Claude na raiz da coordenação. Se a sessão foi aberta aqui, reabrir na raiz ou invocar a skill lendo seu caminho explicitamente; não presumir descoberta de catálogo entre repositórios.

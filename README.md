@@ -1,6 +1,6 @@
 # finbank-v2-web
 
-Frontend Vue/TypeScript do FinBank V2. Documentação oficial, regras e histórias ficam na coordenação (`../_bmad-output/`, `../.claude/rules/`).
+Frontend Vue/TypeScript do FinBank V2. Este repositório é público e autossuficiente: setup, execução e testes dependem só dele. As referências a histórias (DEV-xxx) vêm da documentação interna da equipe e não são necessárias para usar o projeto.
 
 Estado atual (DEV-002): somente bootstrap e uma tela neutra acessível. Sem rotas, cliente HTTP, autenticação, fluxos bancários ou valores financeiros. O navegador nunca é autoridade financeira; valores monetários futuros serão renderizados a partir de centavos inteiros recebidos da API.
 
@@ -49,7 +49,7 @@ Detalhes de execução:
 - **VS Code:** o script `cy:run` remove `ELECTRON_RUN_AS_NODE`, exportada pelos terminais da extensão do VS Code.
 - **Artefatos:** screenshots de falha ficam em `cypress/screenshots/`, ignorado pelo Git.
 
-Guia de qualidade: `../docs/quality.md`.
+**Qualidade:** ESLint com `--max-warnings 0`, typecheck estrito, Vitest e PostgreSQL real nos testes de integração. Os testes cobrem o comportamento correto. Não há meta percentual de cobertura.
 
 ## Acessibilidade
 
