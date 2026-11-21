@@ -19,7 +19,8 @@
     "preview:e2e": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "cy:run": "env -u ELECTRON_RUN_AS_NODE cypress run",
     "test:e2e": "npm run build && start-server-and-test preview:e2e http://127.0.0.1:4173 cy:run",
-    "verify": "npm run lint && npm run typecheck && npm test && npm run build"
+    "verify": "npm run audit:prod && npm run lint && npm run typecheck && npm test && npm run build",
+    "audit:prod": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "vue": "3.5.45"
@@ -43,5 +44,19 @@
     "vite": "8.3.7",
     "vitest": "4.1.12",
     "vue-tsc": "3.3.14"
+  },
+  "overrides": {
+    "js-beautify": {
+      "glob": {
+        ".": "14.0.6",
+        "minimatch": "11.0.8"
+      }
+    },
+    "editorconfig": {
+      "minimatch": "11.0.8"
+    },
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "11.0.8"
+    }
   }
 }

@@ -30,10 +30,25 @@ npm run build       # typecheck + vite build em dist/
 npm run preview     # serve dist/ localmente
 npm test            # vitest run (jsdom)
 npm run test:e2e    # build + vite preview (127.0.0.1:4173) + Cypress no navegador
-npm run verify      # lint + typecheck + test + build
+npm run audit:prod  # npm audit --omit=dev --audit-level=high (requer rede)
+npm run verify      # audit:prod + lint + typecheck + test + build (requer rede)
 ```
 
 Não há variáveis de ambiente nem dependência da API ou de credenciais nesta etapa.
+
+## Dependências e auditoria (DEV-013)
+
+`npm run verify` começa por `audit:prod`, que falha com qualquer aviso alto ou crítico em dependências de produção. O passo consulta o registro do npm: sem rede, o `verify` falha nesse ponto, e um aviso publicado depois pode fazê-lo falhar sem mudança de código.
+
+Overrides em `package.json`, restritos ao pacote que puxa a versão afetada (nunca globais) e com versões publicadas há pelo menos 7 dias quando adotadas:
+
+| Pacote que puxa | Override | Motivo |
+|---|---|---|
+| `js-beautify` (`@vue/test-utils` 2.5.1) | `glob` 14.0.6, e `minimatch` 11.0.8 dentro dele | `glob` 13.0.7 e `minimatch` 10.2.6 afetados por avisos moderados |
+| `editorconfig` (`js-beautify`) | `minimatch` 11.0.8 | `minimatch` 10.2.6 afetado por aviso moderado |
+| `@typescript-eslint/typescript-estree` (`typescript-eslint` 8.72.2, `eslint-plugin-vue`) | `minimatch` 11.0.8 | idem; é a versão usada por `typescript-eslint` 8.73.0 e pelo ESLint |
+
+Compatibilidade verificada com as suítes, o E2E e a CLI do `js-beautify` com `.editorconfig` e padrão glob (resolução de seções idêntica à da versão anterior). Ao atualizar `@vue/test-utils` ou `typescript-eslint`, remova o override correspondente se a nova versão já trouxer a dependência corrigida e confirme com `npm audit` e `npm ls glob minimatch`. Situação na adoção: `npm audit` sem avisos (produção e desenvolvimento). Não usar `npm audit fix`: as correções sugeridas rebaixam dependências diretas.
 
 ## Smoke E2E (DEV-007)
 
