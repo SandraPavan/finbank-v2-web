@@ -14,3 +14,5 @@ CLAUDE.md
 CLAUDE.local.md
 Dockerfile
 .dockerignore
+pacts
+contract

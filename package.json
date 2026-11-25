@@ -19,14 +19,18 @@
     "preview:e2e": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "cy:run": "env -u ELECTRON_RUN_AS_NODE cypress run",
     "test:e2e": "npm run build && start-server-and-test preview:e2e http://127.0.0.1:4173 cy:run",
+    "test:contract": "node -e \"fs.rmSync('pacts',{recursive:true,force:true})\" && env PACT_DO_NOT_TRACK=true SCARF_ANALYTICS=false vitest run --config vitest.contract.config.ts",
+    "test:e2e:stack": "env -u ELECTRON_RUN_AS_NODE cypress run --config-file cypress.stack.config.ts",
     "verify": "npm run audit:prod && npm run lint && npm run typecheck && npm test && npm run build",
     "audit:prod": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
-    "vue": "3.5.45"
+    "vue": "3.5.45",
+    "vue-router": "4.6.5"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@pact-foundation/pact": "17.1.4",
     "@types/node": "24.19.2",
     "@vitejs/plugin-vue": "6.0.10",
     "@vue/eslint-config-typescript": "14.9.0",

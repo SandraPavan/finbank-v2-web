@@ -1,0 +1,2242 @@
+{
+  "consumer": {
+    "name": "finbank-v2-web"
+  },
+  "interactions": [
+    {
+      "description": "banco indisponível",
+      "providerStates": [
+        {
+          "name": "sessão de cliente com banco indisponível"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/auth/me"
+      },
+      "response": {
+        "body": {
+          "code": "TEMPORARY_UNAVAILABLE",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 503
+      }
+    },
+    {
+      "description": "clientes",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/facilitator/workspaces/11111111-1111-4111-8111-111111111111/customers",
+        "query": {
+          "offset": [
+            "0"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "items": [
+            {
+              "customerId": "22222222-2222-4222-8222-222222222222",
+              "email": "cliente@contrato.test",
+              "status": "ACTIVE"
+            }
+          ],
+          "nextOffset": null
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.items": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.items[*].customerId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            },
+            "$.items[*].email": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^(ACTIVE|DISABLED)$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "concluir com a credencial temporária",
+      "providerStates": [
+        {
+          "name": "sessão restrita de cliente"
+        }
+      ],
+      "request": {
+        "body": {
+          "newPassword": "senha de contrato longa"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/password/recovery"
+      },
+      "response": {
+        "body": {
+          "code": "PASSWORD_POLICY_VIOLATION",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 422
+      }
+    },
+    {
+      "description": "concluir recuperação",
+      "providerStates": [
+        {
+          "name": "sessão restrita de cliente"
+        }
+      ],
+      "request": {
+        "body": {
+          "newPassword": "outra senha de contrato"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/password/recovery"
+      },
+      "response": {
+        "body": {
+          "csrfToken": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+          "identityId": "22222222-2222-4222-8222-222222222222",
+          "passwordChangeRequired": false,
+          "profile": "CUSTOMER",
+          "workspaceId": "11111111-1111-4111-8111-111111111111"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.csrfToken": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "$.identityId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            },
+            "$.workspaceId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "desativar cliente",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/facilitator/workspaces/11111111-1111-4111-8111-111111111111/customers/22222222-2222-4222-8222-222222222222/disable"
+      },
+      "response": {
+        "body": {
+          "customerId": "22222222-2222-4222-8222-222222222222",
+          "status": "DISABLED"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "emitir credencial",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/facilitator/workspaces/11111111-1111-4111-8111-111111111111/customers/22222222-2222-4222-8222-222222222222/password-reset"
+      },
+      "response": {
+        "body": {
+          "customerId": "22222222-2222-4222-8222-222222222222",
+          "expiresAt": "2026-11-25T12:00:00.000Z",
+          "temporaryCredential": "AAAA-BBBB-CCCC-DDDD-EEEE"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.expiresAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+                }
+              ]
+            },
+            "$.temporaryCredential": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^([0-9A-Z]{4}-){4}[0-9A-Z]{4}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "emitir para cliente desativado",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador com cliente desativado"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/facilitator/workspaces/11111111-1111-4111-8111-111111111111/customers/22222222-2222-4222-8222-222222222222/password-reset"
+      },
+      "response": {
+        "body": {
+          "code": "IDENTITY_STATE_CONFLICT",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 409
+      }
+    },
+    {
+      "description": "emitir sem vínculo",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador sem vínculo"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/facilitator/workspaces/11111111-1111-4111-8111-111111111111/customers/22222222-2222-4222-8222-222222222222/password-reset"
+      },
+      "response": {
+        "body": {
+          "code": "RESOURCE_NOT_FOUND",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 404
+      }
+    },
+    {
+      "description": "login com token de outro contexto",
+      "providerStates": [
+        {
+          "name": "facilitador com senha"
+        }
+      ],
+      "request": {
+        "body": {
+          "email": "facilitador@contrato.test",
+          "password": "senha de contrato longa"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_preauth=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_preauth=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/facilitator/login"
+      },
+      "response": {
+        "body": {
+          "code": "CSRF_VALIDATION_FAILED",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      }
+    },
+    {
+      "description": "login de cliente",
+      "providerStates": [
+        {
+          "name": "cliente com senha"
+        }
+      ],
+      "request": {
+        "body": {
+          "alias": "turma-contrato",
+          "email": "cliente@contrato.test",
+          "password": "senha de contrato longa"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_preauth=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_preauth=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/customer/login"
+      },
+      "response": {
+        "body": {
+          "csrfToken": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+          "identityId": "22222222-2222-4222-8222-222222222222",
+          "passwordChangeRequired": false,
+          "profile": "CUSTOMER",
+          "workspaceId": "11111111-1111-4111-8111-111111111111"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.csrfToken": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "$.identityId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            },
+            "$.workspaceId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "login de cliente com credencial temporária",
+      "providerStates": [
+        {
+          "name": "cliente cuja credencial temporária é a senha informada"
+        }
+      ],
+      "request": {
+        "body": {
+          "alias": "turma-contrato",
+          "email": "cliente@contrato.test",
+          "password": "senha de contrato longa"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_preauth=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_preauth=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/customer/login"
+      },
+      "response": {
+        "body": {
+          "csrfToken": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+          "identityId": "22222222-2222-4222-8222-222222222222",
+          "passwordChangeRequired": true,
+          "profile": "CUSTOMER",
+          "workspaceId": "11111111-1111-4111-8111-111111111111"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.csrfToken": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "$.identityId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            },
+            "$.workspaceId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "login de cliente recusado",
+      "providerStates": [
+        {
+          "name": "cliente com outra senha"
+        }
+      ],
+      "request": {
+        "body": {
+          "alias": "turma-contrato",
+          "email": "cliente@contrato.test",
+          "password": "senha de contrato longa"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_preauth=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_preauth=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/customer/login"
+      },
+      "response": {
+        "body": {
+          "code": "AUTH_INVALID_CREDENTIALS",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 401
+      }
+    },
+    {
+      "description": "login de cliente restrito por tentativas",
+      "providerStates": [
+        {
+          "name": "cliente com login restrito"
+        }
+      ],
+      "request": {
+        "body": {
+          "alias": "turma-contrato",
+          "email": "cliente@contrato.test",
+          "password": "senha de contrato longa"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_preauth=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_preauth=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/customer/login"
+      },
+      "response": {
+        "body": {
+          "code": "RATE_LIMIT_EXCEEDED",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8",
+          "Retry-After": "30"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Retry-After": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[1-9][0-9]*$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 429
+      }
+    },
+    {
+      "description": "login de facilitador",
+      "providerStates": [
+        {
+          "name": "facilitador com senha"
+        }
+      ],
+      "request": {
+        "body": {
+          "email": "facilitador@contrato.test",
+          "password": "senha de contrato longa"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_preauth=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_preauth=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/facilitator/login"
+      },
+      "response": {
+        "body": {
+          "csrfToken": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+          "identityId": "33333333-3333-4333-8333-333333333333",
+          "passwordChangeRequired": false,
+          "profile": "FACILITATOR",
+          "workspaceId": null
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.csrfToken": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "$.identityId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "reativar cliente",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador com cliente desativado"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/facilitator/workspaces/11111111-1111-4111-8111-111111111111/customers/22222222-2222-4222-8222-222222222222/enable"
+      },
+      "response": {
+        "body": {
+          "customerId": "22222222-2222-4222-8222-222222222222",
+          "status": "ACTIVE"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "sair",
+      "providerStates": [
+        {
+          "name": "sessão de cliente"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/logout"
+      },
+      "response": {
+        "status": 204
+      }
+    },
+    {
+      "description": "sair de todas",
+      "providerStates": [
+        {
+          "name": "sessão de cliente"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/logout-all"
+      },
+      "response": {
+        "status": 204
+      }
+    },
+    {
+      "description": "sem sessão",
+      "providerStates": [
+        {
+          "name": "sem sessão"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/auth/me"
+      },
+      "response": {
+        "body": {
+          "code": "AUTH_SESSION_REQUIRED",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 401
+      }
+    },
+    {
+      "description": "sessão de cliente",
+      "providerStates": [
+        {
+          "name": "sessão de cliente"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/auth/me"
+      },
+      "response": {
+        "body": {
+          "identityId": "22222222-2222-4222-8222-222222222222",
+          "passwordChangeRequired": false,
+          "profile": "CUSTOMER",
+          "workspaceId": "11111111-1111-4111-8111-111111111111"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.identityId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            },
+            "$.workspaceId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "sessão de facilitador",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/auth/me"
+      },
+      "response": {
+        "body": {
+          "identityId": "33333333-3333-4333-8333-333333333333",
+          "passwordChangeRequired": false,
+          "profile": "FACILITATOR",
+          "workspaceId": null
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.identityId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "sessão expirada",
+      "providerStates": [
+        {
+          "name": "sessão expirada de cliente"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/auth/me"
+      },
+      "response": {
+        "body": {
+          "code": "AUTH_SESSION_EXPIRED",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 401
+      }
+    },
+    {
+      "description": "sessão restrita",
+      "providerStates": [
+        {
+          "name": "sessão restrita de cliente"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/auth/me"
+      },
+      "response": {
+        "body": {
+          "identityId": "22222222-2222-4222-8222-222222222222",
+          "passwordChangeRequired": true,
+          "profile": "CUSTOMER",
+          "workspaceId": "11111111-1111-4111-8111-111111111111"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.identityId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            },
+            "$.workspaceId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "token do contexto pré-autenticado",
+      "providerStates": [
+        {
+          "name": "sem sessão"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/auth/csrf"
+      },
+      "response": {
+        "body": {
+          "csrfToken": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.csrfToken": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "trocar com senha atual errada",
+      "providerStates": [
+        {
+          "name": "sessão de cliente"
+        }
+      ],
+      "request": {
+        "body": {
+          "currentPassword": "senha errada longa",
+          "newPassword": "outra senha de contrato"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/password/change"
+      },
+      "response": {
+        "body": {
+          "code": "AUTH_CURRENT_PASSWORD_INVALID",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 422
+      }
+    },
+    {
+      "description": "trocar por senha fora da política",
+      "providerStates": [
+        {
+          "name": "sessão de cliente"
+        }
+      ],
+      "request": {
+        "body": {
+          "currentPassword": "senha de contrato longa",
+          "newPassword": "curta"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/password/change"
+      },
+      "response": {
+        "body": {
+          "code": "PASSWORD_POLICY_VIOLATION",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 422
+      }
+    },
+    {
+      "description": "trocar senha",
+      "providerStates": [
+        {
+          "name": "sessão de cliente"
+        }
+      ],
+      "request": {
+        "body": {
+          "currentPassword": "senha de contrato longa",
+          "newPassword": "outra senha de contrato"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
+          "X-CSRF-Token": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "X-CSRF-Token": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/password/change"
+      },
+      "response": {
+        "body": {
+          "csrfToken": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+          "identityId": "22222222-2222-4222-8222-222222222222",
+          "passwordChangeRequired": false,
+          "profile": "CUSTOMER",
+          "workspaceId": "11111111-1111-4111-8111-111111111111"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.csrfToken": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            },
+            "$.identityId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            },
+            "$.workspaceId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "workspace",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/facilitator/workspaces/11111111-1111-4111-8111-111111111111"
+      },
+      "response": {
+        "body": {
+          "alias": "turma-contrato",
+          "workspaceId": "11111111-1111-4111-8111-111111111111"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.alias": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "workspace sem vínculo",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador sem vínculo"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/facilitator/workspaces/11111111-1111-4111-8111-111111111111"
+      },
+      "response": {
+        "body": {
+          "code": "RESOURCE_NOT_FOUND",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 404
+      }
+    },
+    {
+      "description": "workspaces",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/facilitator/workspaces",
+        "query": {
+          "offset": [
+            "0"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "items": [
+            {
+              "alias": "turma-contrato",
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            }
+          ],
+          "nextOffset": null
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.items": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.items[*].alias": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].workspaceId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "workspaces com mais páginas",
+      "providerStates": [
+        {
+          "name": "sessão de facilitador com muitos workspaces"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/facilitator/workspaces",
+        "query": {
+          "offset": [
+            "0"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "items": [
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            },
+            {
+              "alias": null,
+              "workspaceId": "11111111-1111-4111-8111-111111111111"
+            }
+          ],
+          "nextOffset": 20
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.items": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 20
+                }
+              ]
+            },
+            "$.items[*].alias": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].workspaceId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                {
+                  "match": "regex",
+                  "regex": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                }
+              ]
+            },
+            "$.nextOffset": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "workspaces em sessão restrita",
+      "providerStates": [
+        {
+          "name": "sessão restrita de facilitador"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/facilitator/workspaces",
+        "query": {
+          "offset": [
+            "0"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "code": "PASSWORD_CHANGE_REQUIRED",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      }
+    },
+    {
+      "description": "workspaces por cliente",
+      "providerStates": [
+        {
+          "name": "sessão de cliente"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Cookie": "finbank_session=SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+        },
+        "matchingRules": {
+          "header": {
+            "Cookie": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^finbank_session=[A-Za-z0-9_-]{43}$"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/facilitator/workspaces",
+        "query": {
+          "offset": [
+            "0"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "code": "ACCESS_DENIED",
+          "correlationId": "corr-12345678"
+        },
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.correlationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._-]{8,64}$"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      }
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "17.1.4"
+    },
+    "pactRust": {
+      "ffi": "0.5.8",
+      "models": "1.3.16"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "finbank-v2-api"
+  }
+}

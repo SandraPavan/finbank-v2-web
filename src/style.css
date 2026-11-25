@@ -1,0 +1,31 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: #1a1a1a; background: #fff; line-height: 1.5; }
+.layout { min-height: 100vh; display: flex; flex-direction: column; }
+.site-header, .site-footer { padding: 1rem 1.5rem; background: #f2f2f2; }
+.site-header { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-items: center; justify-content: space-between; }
+.site-header nav { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.brand { margin: 0; font-weight: 600; }
+.content { flex: 1; width: 100%; max-width: 60rem; padding: 2rem 1.5rem; }
+.site-footer p { margin: 0; font-size: 0.875rem; color: #3d3d3d; }
+form { display: grid; gap: 1rem; max-width: 26rem; }
+.field { display: grid; gap: 0.25rem; }
+.hint { margin: 0; font-size: 0.875rem; color: #3d3d3d; }
+.field-error, .problem { margin: 0; color: #a40e26; }
+.problem, .notice { padding: 0.75rem 1rem; border: 1px solid currentcolor; border-radius: 0.25rem; margin: 0 0 1rem; max-width: 40rem; }
+.notice { color: #14532d; }
+input, button { font: inherit; padding: 0.5rem 0.75rem; border-radius: 0.25rem; border: 1px solid #595959; }
+input[aria-invalid='true'] { border-color: #a40e26; }
+button { background: #1a4fd6; color: #fff; border-color: #1a4fd6; cursor: pointer; }
+button.secondary { background: #fff; color: #1a1a1a; border-color: #595959; }
+button[aria-disabled='true'] { background: #595959; border-color: #595959; color: #fff; cursor: default; }
+a { color: #1a4fd6; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #bfbfbf; overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+dialog { max-width: 32rem; border: 1px solid #595959; border-radius: 0.5rem; padding: 1.5rem; }
+dialog::backdrop { background: rgb(0 0 0 / 50%); }
+.credential { font-family: ui-monospace, monospace; font-size: 1.25rem; overflow-wrap: anywhere; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 3px solid #1a4fd6; outline-offset: 2px; }
+h1:focus, .problem:focus { outline: none; }
+h1:focus-visible, .problem:focus-visible { outline: 3px solid #1a4fd6; outline-offset: 2px; }

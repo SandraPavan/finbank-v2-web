@@ -1,54 +1,58 @@
+<script setup lang="ts">
+import { nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import AppHeader from './components/AppHeader.vue';
+import MessageView from './views/MessageView.vue';
+import { useSession } from './session/session';
+import { TEXTS } from './texts';
+
+const session = useSession();
+const router = useRouter();
+
+// Ao trocar de tela, o foco vai para o título: quem usa leitor de tela percebe a mudança.
+router.afterEach(async (to, from) => {
+  if (from.matched.length > 0 && to.path !== from.path) {
+    await nextTick();
+    document.querySelector<HTMLElement>('main h1')?.focus();
+  }
+});
+
+async function retry(): Promise<void> {
+  try {
+    await session.reload();
+    // Reaplica as guardas com o estado agora conhecido.
+    const { path } = router.currentRoute.value;
+    await router.replace({ path, query: {}, force: true });
+  } catch {
+    // Continua indisponível.
+  }
+}
+</script>
+
 <template>
   <div class="layout">
-    <header class="site-header">
-      <p class="brand">FinBank V2</p>
-    </header>
+    <AppHeader />
     <main class="content">
-      <h1>FinBank V2</h1>
-      <p>Ambiente educacional em preparação.</p>
+      <RouterView v-slot="{ Component, route }">
+        <MessageView
+          v-if="route.meta.access !== undefined && session.state.status === 'unknown'"
+          title="Indisponível"
+          :message="TEXTS.unavailable"
+          retry
+          @retry="retry"
+        />
+        <MessageView
+          v-else-if="
+            (route.meta.access === 'CUSTOMER' || route.meta.access === 'FACILITATOR') && session.state.status === 'active' && session.state.profile !== route.meta.access
+          "
+          title="Sem acesso"
+          :message="TEXTS.forbidden"
+        />
+        <component :is="Component" v-else :key="route.path" />
+      </RouterView>
     </main>
     <footer class="site-footer">
-      <p>Ambiente educacional simulado.</p>
+      <p>{{ TEXTS.notice }}</p>
     </footer>
   </div>
 </template>
-
-<style scoped>
-.layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  color: #1a1a1a;
-  background: #ffffff;
-  line-height: 1.5;
-}
-
-.site-header,
-.site-footer {
-  padding: 1rem 1.5rem;
-  background: #f2f2f2;
-}
-
-.brand {
-  margin: 0;
-  font-weight: 600;
-}
-
-.content {
-  flex: 1;
-  padding: 2rem 1.5rem;
-  max-width: 60rem;
-}
-
-.site-footer p {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #3d3d3d;
-}
-
-:focus-visible {
-  outline: 3px solid #1a4fd6;
-  outline-offset: 2px;
-}
-</style>

@@ -1,4 +1,5 @@
-import { createApp } from 'vue';
-import App from './App.vue';
+import { createWebHistory } from 'vue-router';
+import { bootstrap } from './bootstrap';
+import './style.css';
 
-createApp(App).mount('#app');
+bootstrap(createWebHistory()).app.mount('#app');
